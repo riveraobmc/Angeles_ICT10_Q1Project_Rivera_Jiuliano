@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Skewer - Entrep Fair Web App</title>
+    <style>
+        body {
+            background-color: #ffffce;
+            font-family: "Arial", Helvetica, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+        .navbar {
+            background: #00182a;
+            color: white;
+            padding: 10px;
+            margin-bottom: 20px;
+        }
+        .navbar a {
+            color: rgb(15, 100, 228);;
+            margin-right: 15px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .container {
+            background: white;
+            border: 3px solid #ffd666;
+            padding: 20px;
+            max-width: 600px;
+            margin: auto;
+        }
+        .page-sec {
+            display: none;
+        }
+        .active-page {
+            display: block;
+        }
+        input, select {
+            padding: 5px;
+            margin: 5px 0;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        button {
+            background: rgb(15, 100, 228);
+            color: white;
+            font-weight: bold;
+            padding: 10px;
+            border: 2px solid #00182a;
+            cursor: pointer;
+            margin-top: 10px;
+            width: 100%;
+        }
+        .menu-item {
+            border-bottom: 1px dashed #b5b4a5;
+            padding: 8px 0;
+        }
+        #receipt-output {
+            background: #ffffe0;
+            border: 1px dashed ##00182a;
+            padding: 10px;
+            margin-top: 15px;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="navbar">
+        <b>Skewer System</b> | 
+        <a href="#" onclick="showPage('receiptPage')">Receipt Generator</a>
+        <a href="#" onclick="showPage('skuPage')">SKU Generator</a>
+    </div>
+
+    <div class="container">
+
+        <div id="receiptPage" class="page-sec active-page">
+            <h2>OBMC Entrep Fair - Receipt Generator</h2>
+            <p>Select items for your order:</p>
+            
+            <div class="menu-item">
+                <input type="checkbox" class="chk" data-name="Americano" data-price="99"> Americano - P99
+            </div>
+            <div class="menu-item">
+                <input type="checkbox" class="chk" data-name="Spanish Latte" data-price="129"> Spanish Latte - P129
+            </div>
+            <div class="menu-item">
+                <input type="checkbox" class="chk" data-name="Cold Brew Malt" data-price="139"> Cold Brew Malt - P139
+            </div>
+            <div class="menu-item">
+                <input type="checkbox" class="chk" data-name="Affogato" data-price="159"> Affogato - P159
+            </div>
+            <div class="menu-item">
+                <input type="checkbox" class="chk" data-name="Caramel Macchiato" data-price="129"> Caramel Macchiato - P129
+            </div>
+
+            <button onclick="generateReceipt()">Create Order</button>
+
+            <div id="receipt-output">Your order summary will appear here.</div>
+        </div>
+
+        <div id="skuPage" class="page-sec">
+            <h2>SKU Generator</h2>
+            <p>Get your unique Stock Keeping Unit:</p>
+
+            <label>Product Category:</label>
+            <select id="catInput">
+                <option value="COFFEE">COFFEE</option>
+                <option value="PASTRY">PASTRY</option>
+                <option value="MERCH">MERCH</option>
+            </select>
+
+            <label>Product Name:</label>
+            <input type="text" id="nameInput" placeholder="e.g., Americano">
+
+            <label>Stock Quantity:</label>
+            <input type="number" id="qtyInput" placeholder="e.g., 50">
+
+            <button onclick="generateSKU()">Generate SKU</button>
+
+            <h3 id="skuResult" style="color: green; margin-top: 15px;"></h3>
+        </div>
+
+    </div>
+
+    <script>
+        function showPage(pageId) {
+            var pages = document.getElementsByClassName('page-sec');
+            for (var i = 0; i < pages.length; i++) {
+                pages[i].classList.remove('active-page');
+            }
+            document.getElementById(pageId).classList.add('active-page');
+        }
+
+        function generateReceipt() {
+            var checkboxes = document.getElementsByClassName('chk');
+            var summaryText = "--- OFFICIAL RECEIPT ---\n";
+            var total = 0;
+            var itemsCount = 0;
+
+            for (var i = 0; i < checkboxes.length; i++) {
+                if (checkboxes[i].checked == true) {
+                    var name = checkboxes[i].getAttribute('data-name');
+                    var price = Number(checkboxes[i].getAttribute('data-price'));
+                    summaryText += "- " + name + " : P" + price + "\n";
+                    total += price;
+                    itemsCount++;
+                }
+            }
+
+            if (itemsCount === 0) {
+                document.getElementById('receipt-output').innerText = "Error: No items selected!";
+                return;
+            }
+
+            summaryText += "------------------------\n";
+            summaryText += "TOTAL DUE: P" + total;
+
+            document.getElementById('receipt-output').innerText = summaryText;
+        }
+
+        function generateSKU() {
+            var cat = document.getElementById('catInput').value;
+            var prodName = document.getElementById('nameInput').value;
+            var qty = document.getElementById('qtyInput').value;
+
+            if(prodName == "" || qty == "") {
+                alert("Fill everything up!!");
+                return;
+            }
+
+            var catCode = cat.substring(0, 3).toUpperCase();
+            var nameCode = prodName.substring(0, 3).toUpperCase();
+            
+            var finalSKU = catCode + "-" + nameCode + "-" + qty;
+
+            document.getElementById('skuResult').innerText = "Generated SKU: " + finalSKU;
+        }
+    </script>
+</body>
+</html>
